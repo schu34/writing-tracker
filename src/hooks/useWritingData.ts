@@ -106,11 +106,27 @@ export function useWritingData() {
     };
   };
 
+  const deleteGoal = (goalId: string) => {
+    const newGoals = goals.filter(goal => goal.id !== goalId);
+    const newEntries = entries.filter(entry => entry.goalId !== goalId);
+    setGoals(newGoals);
+    setEntries(newEntries);
+    saveToStorage(newGoals, newEntries);
+  };
+
+  const deleteEntry = (entryId: string) => {
+    const newEntries = entries.filter(entry => entry.id !== entryId);
+    setEntries(newEntries);
+    saveToStorage(goals, newEntries);
+  };
+
   return {
     goals,
     entries,
     addGoal,
     addEntry,
     calculateStats,
+    deleteGoal,
+    deleteEntry,
   };
 }

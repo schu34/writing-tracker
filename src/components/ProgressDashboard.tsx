@@ -4,19 +4,21 @@ interface ProgressDashboardProps {
   goal: WritingGoal;
   entries: DailyEntry[];
   stats: WritingStats;
+  onDeleteEntry: (entryId: string) => void;
 }
 
-export default function ProgressDashboard({ goal, entries, stats }: ProgressDashboardProps) {
+export default function ProgressDashboard({ goal, entries, stats, onDeleteEntry }: ProgressDashboardProps) {
   // Calculate daily progress for recent entries
   const calculateDailyProgress = () => {
     const sortedEntries = [...entries].sort((a, b) => a.date.getTime() - b.date.getTime());
-    const dailyProgress: Array<{ date: Date; totalWords: number; dailyWords: number }> = [];
+    const dailyProgress: Array<{ id: string; date: Date; totalWords: number; dailyWords: number }> = [];
     
     sortedEntries.forEach((entry, index) => {
       const previousTotal = index === 0 ? goal.initialWordCount : sortedEntries[index - 1].wordCount;
       const dailyWords = entry.wordCount - previousTotal;
       
       dailyProgress.push({
+        id: entry.id,
         date: entry.date,
         totalWords: entry.wordCount,
         dailyWords: Math.max(0, dailyWords) // Ensure non-negative
@@ -85,6 +87,13 @@ export default function ProgressDashboard({ goal, entries, stats }: ProgressDash
                 <span className="daily-words">+{progress.dailyWords.toLocaleString()} words</span>
                 <span className="total-words">({progress.totalWords.toLocaleString()} total)</span>
               </div>
+              <button 
+                onClick={() => onDeleteEntry(progress.id)}
+                className="delete-entry-btn"
+                title="Delete this entry"
+              >
+                ✕
+              </button>
             </div>
           ))
         ) : (
